@@ -25,3 +25,10 @@ Then create the base images on your FreeBSD machine:
 ```shell
 ansible-playbook -i hosts playbook.yml
 ```
+
+Once install the worker logs to syslog and can be stopped and started with
+
+```
+/etc/rc.d/worker start
+/etc/rc.d/worker stop
+```
