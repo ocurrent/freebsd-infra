@@ -1,0 +1,12 @@
+#!/bin/sh
+
+. /etc/rc.subr
+
+name=worker
+rcvar=worker_enable
+
+command="/usr/local/bin/${name}"
+command_args="--connect /etc/ocluster/pool.cap --name {{ inventory_hostname_short }} --state-dir /obuilder/state --obuilder-store zfs:obuilder --obuilder-healthcheck 0 --obuilder-prune-threshold=25 --capacity={{ capacity }} -v | logger &"
+
+load_rc_config $name
+run_rc_command "$1"

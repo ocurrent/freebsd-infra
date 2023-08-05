@@ -3,8 +3,10 @@
 - hosts: all
   name: Install Roles
   roles:
+    - opam
+    - ocluster
     - docker
     - { role: base-image, version: "busybox", user_name: opam, zfs_pool: "obuilder" }
-    - { role: base-image, version: "5.0.0", user_name: opam, zfs_pool: "obuilder" }
     - { role: base-image, version: "4.14.1", user_name: opam, zfs_pool: "obuilder" }
+    - { role: base-image, version: "5.0.0", user_name: opam, zfs_pool: "obuilder" }
 

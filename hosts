@@ -1,4 +1,4 @@
-summer.caelum.ci.dev
+summer.caelum.ci.dev capacity=10
 
 [all:vars]
 ansible_python_interpreter=/usr/local/bin/python

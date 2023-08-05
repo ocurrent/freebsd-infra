@@ -1,0 +1,76 @@
+---
+
+- name: Install/upgrade OS packages
+  shell: pkg install -y bash curl git gmake patch rsync sudo zstd pkgconf sqlite3 libedit capnproto gmp libev graphviz
+  become: yes
+
+- name: Remove ~/ocluster
+  file:
+    path: "{{ ansible_env.HOME }}/ocluster"
+    state: absent
+
+- name: Download the source from GitHub
+  git:
+    repo: https://github.com/mtelvers/ocluster.git
+    dest: "{{ ansible_env.HOME }}/ocluster"
+    force: yes
+    recursive: no
+    version: freebsd
+
+- name: Download the source from GitHub
+  git:
+    repo: https://github.com/mtelvers/obuilder.git
+    dest: "{{ ansible_env.HOME }}/ocluster/obuilder"
+    force: yes
+    recursive: no
+    version: freebsd
+
+- name: Create opam switch
+  shell: opam switch create . 4.14.1 --deps-only --with-test -y
+  args:
+    chdir: "{{ ansible_env.HOME }}/ocluster"
+
+- name: Install missing opam package
+  shell: eval $(opam env) && opam install -y md2mld
+  args:
+    chdir: "{{ ansible_env.HOME }}/ocluster"
+
+- name: Dune build
+  shell: eval $(opam env) && dune build --release
+  args:
+    chdir: "{{ ansible_env.HOME }}/ocluster"
+
+- name: Install to bin folder
+  become: yes
+  copy:
+    src: "{{ ansible_env.HOME }}/ocluster/_build/default/bin/worker.exe"
+    dest: /usr/local/bin/worker
+    remote_src: yes
+    mode: '0755'
+
+- name: create /etc/ocluster
+  become: yes
+  file:
+    path: /etc/ocluster
+    state: directory
+
+- name: Copy pool capability
+  become: yes
+  copy:
+    src: "secrets/pool-freebsd-x86_64.cap"
+    dest: /etc/ocluster/pool.cap
+    mode: '0400'
+
+- name: Create rc.d script
+  become: yes
+  template:
+    src: worker
+    dest: /etc/rc.d/worker
+    mode: '0755'
+
+- name: Create rc.d script
+  become: yes
+  community.general.sysrc:
+    name: worker_enable
+    value: "YES"
+
