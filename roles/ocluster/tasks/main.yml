@@ -2,7 +2,6 @@
 
 - name: Install/upgrade OS packages
   shell: pkg install -y bash curl git gmake patch rsync sudo zstd pkgconf sqlite3 libedit capnproto gmp libev graphviz
-  become: yes
 
 - name: Remove ~/ocluster
   file:
@@ -41,7 +40,6 @@
     chdir: "{{ ansible_env.HOME }}/ocluster"
 
 - name: Install to bin folder
-  become: yes
   copy:
     src: "{{ ansible_env.HOME }}/ocluster/_build/default/bin/worker.exe"
     dest: /usr/local/bin/worker
@@ -49,27 +47,23 @@
     mode: '0755'
 
 - name: create /etc/ocluster
-  become: yes
   file:
     path: /etc/ocluster
     state: directory
 
 - name: Copy pool capability
-  become: yes
   copy:
     src: "secrets/pool-freebsd-x86_64.cap"
     dest: /etc/ocluster/pool.cap
     mode: '0400'
 
 - name: Create rc.d script
-  become: yes
   template:
     src: worker
     dest: /etc/rc.d/worker
     mode: '0755'
 
 - name: Create rc.d script
-  become: yes
   community.general.sysrc:
     name: worker_enable
     value: "YES"

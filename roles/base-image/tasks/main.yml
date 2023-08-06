@@ -16,7 +16,6 @@
 - name: Delete existing base image {{ zfs_pool }}/base-image/{{ base_image }}
   shell: zfs destroy -R -r {{ zfs_pool }}/base-image/{{ base_image }}
   when: zfs_check.rc == 0
-  become: yes
 
 - name: Check for user {{ user_name }}
   shell: getent passwd {{ user_name }}
@@ -27,10 +26,8 @@
   shell: |
     pw userdel {{ user_name }} -r
   when: user_check.rc == 0
-  become: yes
 
 - name: Create user {{ user_name }}
-  become: yes
   shell: |
     pw groupadd opam -g 1000
     pw useradd -m -n opam -g opam -u 1000 -h - -c {{ user_name }}
@@ -40,10 +37,8 @@
     dest: "/usr/local/etc/sudoers.d/{{ user_name }}"
     content: |
       {{ user_name }} ALL=(ALL:ALL) NOPASSWD: ALL
-  become: yes
 
 - name: Create setup script
-  become: yes
   copy:
     dest: /usr/home/{{ user_name }}/freebsd-ocaml.sh
     mode: u+rwx,g+rx,o+rx
@@ -57,7 +52,6 @@
   when: version != "busybox"
 
 - name: Run freebsd-ocaml.sh script as user {{ user_name }} for {{ version }}
-  become: yes
   shell: su - {{ user_name }} -c ./freebsd-ocaml.sh
   args:
     chdir: "/usr/home/{{ user_name }}"
@@ -72,49 +66,38 @@
 - name: Delete existing snapshot zroot/root@snap
   shell: zfs destroy zroot/root@snap
   when: zfs_check.rc == 0
-  become: yes
 
 - name: Snapshot the root filesystem
-  become: yes
   shell: zfs snapshot zroot/root@snap
 
 - name: Create target for base image {{ zfs_pool }}/base-image/{{ base_image }}
   shell: zfs create -p {{ zfs_pool }}/base-image/{{ base_image }}
-  become: yes
 
 - name: Copy ZFS volume zroot/root@snap to {{ zfs_pool }}/base-image/{{ base_image }}
-  become: yes
   shell: zfs send zroot/root@snap | zfs receive -d {{ zfs_pool }}/base-image/{{ base_image }}
 
 - name: Delete snapshot zroot/root@snap
   shell: zfs destroy zroot/root@snap
-  become: yes
 
 - name: Delete copy of the snapshot
   shell: zfs destroy {{ zfs_pool }}/base-image/{{ base_image }}/root@snap
-  become: yes
 
 - name: Rename to rootfs
   shell: zfs rename {{ zfs_pool }}/base-image/{{ base_image }}/root {{ zfs_pool }}/base-image/{{ base_image }}/rootfs
-  become: yes
 
 - name: Clean up image
-  become: yes
   shell: |
     rm -fR `ls -d usr/home/* | grep -v opam`
     rm -fR rescue boot usr/share/games
     rm usr/bin/fortune usr/lib/lib*_p.a
     find usr/share/man -type f -delete
-    tar -C /var -cf - . | tar -C ./var -xpf -
     chmod 1777 tmp
   args:
     chdir: "/{{ zfs_pool }}/base-image/{{ base_image }}/rootfs"
 
 - name: Create a snapshot of the base image
-  become: yes
   shell: zfs snapshot -r {{ zfs_pool }}/base-image/{{ base_image }}@snap
 
 - name: Delete user {{ user_name }}
-  become: yes
   shell: pw userdel {{ user_name }} -r
 

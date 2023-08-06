@@ -1,14 +1,45 @@
 ---
 
-During the FreeBSD installation you will have created a user account on the machine.
+During the FreeBSD installation:
+- Unselect all the optional system components (kernel-dbg and lib32)
+- Choose layout `Auto (ZFS)`
+- Add users to the system: No
+- Manual configuration shell at the end of the installation:
 
-Make sure you can sudo without a password.
+Remove all these (empty) unnecessary ZFS partitions to prevent them from being used
 
 ```shell
-echo "mte24 ALL=(ALL:ALL) NOPASSWD: ALL" > /usr/local/etc/sudoers.d/mte24
+zfs destroy -r zroot/tmp
+zfs destroy -r zroot/usr
+zfs destroy -r zroot/var
 ```
 
-FreeBSD doesn't install python by default so this must be installed first before Ansible will work.
+Create the ZFS pool for obuilder (typicaly on a second disk or partition)
+
+```shell
+zpool create obuilder /dev/da1
+```
+
+Add your SSH key, allow root to login and disable password authentication
+
+```shell
+mkdir -m 700 /root/.ssh
+fetch https://github.com/mtelvers.keys -o authorized_keys
+chmod 600 /root/.ssh/authoized_keys
+echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
+echo "ChallengeResponseAuthentication no" >> /etc/ssh/sshd_config
+echo "PasswordAuthentication no" >> /etc/ssh/sshd_config
+```
+
+Finish the installation and reboot
+
+```shell
+exit
+```
+
+Ensure you can SSH to the machine (as root) without a password.
+
+FreeBSD doesn't install Python by default so this must be installed first before Ansible will work.
 
 ```shell
 pkg install -y python
