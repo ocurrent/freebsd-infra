@@ -12,6 +12,8 @@ Remove all these (empty) unnecessary ZFS partitions to prevent them from being u
 zfs destroy -r zroot/tmp
 zfs destroy -r zroot/usr
 zfs destroy -r zroot/var
+mkdir -p /tmp
+chmod 1777 /tmp
 ```
 
 Create the ZFS pool for obuilder (typicaly on a second disk or partition)

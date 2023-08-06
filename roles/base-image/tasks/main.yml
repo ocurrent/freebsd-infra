@@ -12,10 +12,10 @@
   command: zfs list -H -o name /
   register: zfs_check
 
-- set_fact: set fact zfs_root
+- set_fact:
     zfs_root: "{{ zfs_check.stdout }}"
 
-- set_fact: set fact zfs_path
+- set_fact:
     zfs_path: "{{ (zfs_check.stdout.split('/'))[1:] | join('/') }}"
 
 - name: Check for existing base image {{ zfs_pool }}/base-image/{{ base_image }}
