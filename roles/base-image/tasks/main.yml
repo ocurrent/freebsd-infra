@@ -49,7 +49,6 @@
   copy:
     dest: "/{{ zfs_pool }}/base-image/{{ base_image }}/rootfs/usr/home/{{ user_name }}/freebsd-ocaml.sh"
     mode: u+rwx,g+rx,o+rx
-    owner: "{{ user_name }}"
     content: |
       #!/bin/sh
       cd /usr/home/opam

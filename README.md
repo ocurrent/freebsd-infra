@@ -1,7 +1,9 @@
 ---
 
 Install FreeBSD accept the default values.  Choose either UFS or ZFS
-filesystem as your preference.  No need to add a additional user.
+filesystem as your preference.  No need to add a additional user.  If you
+include `kernel-dbg` and `lib32` make sure your partition is about 16G,
+otherwise 8G is sufficient.
 
 In the manual configuration shell at the end of setup run the following.
 
@@ -15,7 +17,7 @@ Add your SSH key, allow root to login and disable password authentication
 
 ```shell
 mkdir -m 700 /root/.ssh
-fetch https://github.com/mtelvers.keys -o authorized_keys
+fetch https://github.com/mtelvers.keys -o /root/.ssh/authorized_keys
 chmod 600 /root/.ssh/authoized_keys
 echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
 echo "ChallengeResponseAuthentication no" >> /etc/ssh/sshd_config
