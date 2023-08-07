@@ -8,16 +8,6 @@
     base_image: "busybox"
   when: version == "busybox"
 
-- name: Find name of root volume
-  command: zfs list -H -o name /
-  register: zfs_check
-
-- set_fact:
-    zfs_root: "{{ zfs_check.stdout }}"
-
-- set_fact:
-    zfs_path: "{{ (zfs_check.stdout.split('/'))[1:] | join('/') }}"
-
 - name: Check for existing base image {{ zfs_pool }}/base-image/{{ base_image }}
   shell: zfs list -H -o name {{ zfs_pool }}/base-image/{{ base_image }}
   register: zfs_check
@@ -27,33 +17,43 @@
   shell: zfs destroy -R -r {{ zfs_pool }}/base-image/{{ base_image }}
   when: zfs_check.rc == 0
 
-- name: Check for user {{ user_name }}
-  shell: getent passwd {{ user_name }}
-  register: user_check
-  failed_when: user_check.rc == 1
+- name: Create target for base image {{ zfs_pool }}/base-image/{{ base_image }}/rootfs
+  shell: zfs create -p {{ zfs_pool }}/base-image/{{ base_image }}/rootfs
 
-- name: Delete user and home directory of {{ user_name }} if it exists
-  shell: |
-    pw userdel {{ user_name }} -r
-  when: user_check.rc == 0
-
-- name: Create user {{ user_name }}
-  shell: |
-    pw groupadd opam -g 1000
-    pw useradd -m -n opam -g opam -u 1000 -h - -c {{ user_name }}
-
-- name: Create sudo file for {{ user_name }}
+- name: Copy the bsdinstall answer script
   copy:
-    dest: "/usr/local/etc/sudoers.d/{{ user_name }}"
+    src: jail
+    dest: jail
+
+- name: Install FreeBSD in jail /{{ zfs_pool }}/base-image/{{ base_image }}/rootfs
+  shell: bsdinstall -D jail.log script jail /{{ zfs_pool }}/base-image/{{ base_image }}/rootfs
+
+- name: Create OS setup script /{{ zfs_pool }}/base-image/{{ base_image }}/rootfs/root/freebsd.sh
+  copy:
+    dest: "/{{ zfs_pool }}/base-image/{{ base_image }}/rootfs/root/freebsd.sh"
+    mode: u+rwx,g+rx,o+rx
     content: |
-      {{ user_name }} ALL=(ALL:ALL) NOPASSWD: ALL
+      #!/bin/sh
+      pw groupadd opam -g 1000
+      pw useradd -m -n opam -g opam -u 1000 -h - -c {{ user_name }}
+      pkg install -y sudo gmake git patch rsync bash zstd pkgconf
+      echo "{{ user_name }} ALL=(ALL:ALL) NOPASSWD: ALL" > "/usr/local/etc/sudoers.d/{{ user_name }}"
+
+- name: Run script in jail /{{ zfs_pool }}/base-image/{{ base_image }}/rootfs
+  shell: jail -c name=base-image path=/{{ zfs_pool }}/base-image/{{ base_image }}/rootfs host=inherit ip6=inherit ip4=inherit mount.devfs command=/root/freebsd.sh
+
+- name: Unmount devfs
+  shell: umount -f /{{ zfs_pool }}/base-image/{{ base_image }}/rootfs/dev
 
 - name: Create setup script
   copy:
-    dest: /usr/home/{{ user_name }}/freebsd-ocaml.sh
+    dest: "/{{ zfs_pool }}/base-image/{{ base_image }}/rootfs/usr/home/{{ user_name }}/freebsd-ocaml.sh"
     mode: u+rwx,g+rx,o+rx
     owner: "{{ user_name }}"
     content: |
+      #!/bin/sh
+      cd /usr/home/opam
+      echo "OPAMCONFIRMLEVEL=unsafe-yes; export OPAMCONFIRMLEVEL" >> .profile
       git clone -b 2.1 https://github.com/ocaml/opam opam
       cd opam && gmake CONFIGURE_ARGS=--with-0install-solver cold && sudo cp -p opam /usr/local/bin/opam-2.1 && cd ../ && rm -rf opam
       sudo ln /usr/local/bin/opam-2.1 /usr/local/bin/opam
@@ -61,55 +61,14 @@
       opam init -k git -a ./opam-repository -c {{ version }} -y
   when: version != "busybox"
 
-- name: Run freebsd-ocaml.sh script as user {{ user_name }} for {{ version }}
-  shell: su - {{ user_name }} -c ./freebsd-ocaml.sh
-  args:
-    chdir: "/usr/home/{{ user_name }}"
-    creates: "/usr/home/{{ user_name }}/opam-repository"
+- name: Run freebsd-ocaml.sh script in jail /{{ zfs_pool }}/base-image/{{ base_image }}/rootfs as user {{ user_name }} for {{ version }}
+  shell: jail -c name=base-image path=/{{ zfs_pool }}/base-image/{{ base_image }}/rootfs host=inherit ip6=inherit ip4=inherit mount.devfs exec.jail_user=opam command=/usr/home/opam/freebsd-ocaml.sh
   when: version != "busybox"
 
-- name: Check for existing snapshot {{ zfs_root }}@snap
-  shell: zfs list -H -o name {{ zfs_root }}@snap
-  register: zfs_check
-  failed_when: zfs_check.rc > 1
-
-- name: Delete existing snapshot {{ zfs_root }}@snap
-  shell: zfs destroy {{ zfs_root }}@snap
-  when: zfs_check.rc == 0
-
-- name: Snapshot the root filesystem
-  shell: zfs snapshot {{ zfs_root }}@snap
-
-- name: Create target for base image {{ zfs_pool }}/base-image/{{ base_image }}
-  shell: zfs create -p {{ zfs_pool }}/base-image/{{ base_image }}
-
-- name: Copy ZFS volume {{ zfs_root }}@snap to {{ zfs_pool }}/base-image/{{ base_image }}
-  shell: zfs send {{ zfs_root }}@snap | zfs receive -d {{ zfs_pool }}/base-image/{{ base_image }}
-
-- name: Delete snapshot {{ zfs_root }}@snap
-  shell: zfs destroy {{ zfs_root }}@snap
-
-- name: Delete copy of the snapshot
-  shell: zfs destroy {{ zfs_pool }}/base-image/{{ base_image }}/{{ zfs_path }}@snap
-
-- name: Rename to rootfs
-  shell: zfs rename {{ zfs_pool }}/base-image/{{ base_image }}/{{ zfs_path }} {{ zfs_pool }}/base-image/{{ base_image }}/rootfs
-
-- name: Clean up image
-  shell: |
-    rm -fR `ls -d usr/home/* | grep -v opam`
-    rm -fR root
-    mkdir root
-    rm -fR rescue boot usr/share/games
-    rm usr/bin/fortune usr/lib/lib*_p.a
-    find usr/share/man -type f -delete
-    chmod 1777 tmp
-  args:
-    chdir: "/{{ zfs_pool }}/base-image/{{ base_image }}/rootfs"
+- name: Unmount devfs
+  shell: umount -f /{{ zfs_pool }}/base-image/{{ base_image }}/rootfs/dev
+  when: version != "busybox"
 
 - name: Create a snapshot of the base image
   shell: zfs snapshot -r {{ zfs_pool }}/base-image/{{ base_image }}@snap
-
-- name: Delete user {{ user_name }}
-  shell: pw userdel {{ user_name }} -r
 

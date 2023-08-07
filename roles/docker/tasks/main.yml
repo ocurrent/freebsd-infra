@@ -4,6 +4,6 @@
   copy:
     dest: /usr/local/bin/docker
     content: |
-      #!/bin/bash
+      #!/bin/sh
     mode: '0755'
 
