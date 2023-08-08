@@ -60,11 +60,9 @@
 - name: Create rc.d script
   template:
     src: worker
-    dest: /etc/rc.d/worker
+    dest: /usr/local/etc/rc.d/worker
     mode: '0755'
 
 - name: Create rc.d script
-  community.general.sysrc:
-    name: worker_enable
-    value: "YES"
+    shell: sysrc worker_enable="YES"
 

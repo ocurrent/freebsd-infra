@@ -38,13 +38,6 @@ first before Ansible will work.
 pkg install -y python
 ```
 
-And on the machine you will run Ansible _from_ install the
-community.general collection
-
-```shell
-ansible-galaxy collection install community.general
-```
-
 Then create the base images on your FreeBSD machine:
 
 ```shell
