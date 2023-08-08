@@ -1,6 +1,6 @@
 ---
 
-Install FreeBSD accept the default values.  Choose either UFS or ZFS
+Install FreeBSD accepting the default values.  Choose either UFS or ZFS
 filesystem as your preference.  No need to add a additional user.  If you
 include `kernel-dbg` and `lib32` make sure your partition is about 16G,
 otherwise 8G is sufficient.
@@ -23,6 +23,13 @@ sysrc -x sshd_flags
 echo 'sshd_flags="-o ChallengeResponseAuthentication=no -o PermitRootLogin=yes -o PasswordAuthentication=no"' >> /etc/rc.conf
 ```
 
+FreeBSD doesn't install Python by default so this must be installed
+before Ansible will work.
+
+```shell
+pkg install -y python
+```
+
 Finish the installation and reboot
 
 ```shell
@@ -31,22 +38,16 @@ exit
 
 Ensure you can SSH to the machine (as root) without a password.
 
-FreeBSD doesn't install Python by default so this must be installed
-first before Ansible will work.
-
-```shell
-pkg install -y python
-```
-
 Then create the base images on your FreeBSD machine:
 
 ```shell
 ansible-playbook -i hosts playbook.yml
 ```
 
-Once install the worker logs to syslog and can be stopped and started with:
+Once installed the worker logs to syslog and can be stopped and started with:
 
 ```shell
-/etc/rc.d/worker start
-/etc/rc.d/worker stop
+service worker start
+service worker stop
 ```
+
