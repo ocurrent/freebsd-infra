@@ -1,0 +1,22 @@
+---
+
+- name: Fetch OS updates
+  shell: freebsd-update fetch
+
+- name: Install OS updates
+  shell: freebsd-update install
+  register: update
+  failed_when: update.rc > 2
+
+- name: Check freebsd-version -k
+  shell: freebsd-version -k
+  register: freebsd_version
+
+- name: Check uname -r
+  shell: uname -r
+  register: uname
+
+- name: Reboot
+  reboot:
+  when: uname.stdout != freebsd_version.stdout
+

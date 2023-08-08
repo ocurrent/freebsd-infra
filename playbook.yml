@@ -3,6 +3,7 @@
 - hosts: all
   name: Install Roles
   roles:
+    - update
     - opam
     - ocluster
     - docker
