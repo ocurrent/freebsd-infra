@@ -19,9 +19,8 @@ Add your SSH key, allow root to login and disable password authentication
 mkdir -m 700 /root/.ssh
 fetch https://github.com/mtelvers.keys -o /root/.ssh/authorized_keys
 chmod 600 /root/.ssh/authoized_keys
-echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
-echo "ChallengeResponseAuthentication no" >> /etc/ssh/sshd_config
-echo "PasswordAuthentication no" >> /etc/ssh/sshd_config
+sysrc -x sshd_flags
+echo 'sshd_flags="-o ChallengeResponseAuthentication=no -o PermitRootLogin=yes -o PasswordAuthentication=no"' >> /etc/rc.conf
 ```
 
 Finish the installation and reboot
