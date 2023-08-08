@@ -53,6 +53,7 @@
       #!/bin/sh
       cd /usr/home/opam
       touch .hushlogin
+      sed -i "" 's/^[^#]*fortune/# &/' .profile .login
       echo "OPAMCONFIRMLEVEL=unsafe-yes; export OPAMCONFIRMLEVEL" >> .profile
       git clone -b 2.1 https://github.com/ocaml/opam opam
       cd opam && gmake CONFIGURE_ARGS=--with-0install-solver cold && sudo cp -p opam /usr/local/bin/opam-2.1 && cd ../ && rm -rf opam
