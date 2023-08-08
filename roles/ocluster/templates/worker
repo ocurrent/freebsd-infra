@@ -1,5 +1,9 @@
 #!/bin/sh
 
+# PROVIDE: worker
+# REQUIRE: LOGIN FILESYSTEMS
+# KEYWORD: shutdown
+
 . /etc/rc.subr
 
 name=worker

@@ -64,5 +64,5 @@
     mode: '0755'
 
 - name: Create rc.d script
-    shell: sysrc worker_enable="YES"
+  shell: sysrc worker_enable="YES"
 
