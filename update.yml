@@ -1,0 +1,44 @@
+---
+
+- hosts: all
+  tasks:
+
+  - name: Pause the worker
+    shell: ci3-admin pause --wait freebsd-x86_64 {{ inventory_hostname_short }}
+    delegate_to: 127.0.0.1
+
+  - name: Stop ocluster worker
+    service:
+      name: worker
+      state: stopped
+
+  - name: Destroy ZFS pool
+    shell: zpool destroy -f obuilder
+    become: yes
+
+  - name: Create new pool
+    shell: zpool create -f obuilder {{ zfs_dev }}
+
+  - name: Set defaults
+    shell: zfs {{ item }}
+    become: yes
+    with_items:
+      - set atime=off obuilder
+      - set checksum=off obuilder
+      - set compression=off obuilder
+
+- name: Run the installation playbook
+  import_playbook: playbook.yml
+
+- hosts: all
+  tasks:
+
+  - name: Start ocluster worker
+    service:
+      name: worker
+      state: started
+
+  - name: Unpause the worker
+    shell: ci3-admin unpause freebsd-x86_64 {{ inventory_hostname_short }}
+    delegate_to: 127.0.0.1
+

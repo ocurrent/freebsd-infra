@@ -51,3 +51,21 @@ service worker start
 service worker stop
 ```
 
+## Updating
+
+Use `update.yml` to pause the worker, update it, rebuild the base images, and resume it.
+
+```shell
+ansible-playbook -i hosts update.yml
+```
+
+
+## Manual partitioning
+
+If you have a large single disk and need to partition it these commands may be helpful.
+
+```shell
+gpart add -t freebsd ada0
+gpart show
+zpool create obuilder /dev/ada0s2
+```

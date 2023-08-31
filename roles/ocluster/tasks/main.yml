@@ -3,6 +3,19 @@
 - name: Install/upgrade OS packages
   shell: pkg install -y bash curl git gmake patch rsync sudo zstd pkgconf sqlite3 libedit capnproto gmp libev graphviz
 
+- name: Install Opam
+  args:
+    chdir: "{{ ansible_env.HOME }}"
+  shell: |
+      curl https://raw.githubusercontent.com/ocaml/opam/master/shell/install.sh -o install.sh
+      chmod +x install.sh
+      ./install.sh --download-only
+      rm install.sh
+      chmod +x opam-*
+      mv opam-* /usr/local/bin/opam
+      sudo ln /usr/local/bin/opam-2.1 /usr/local/bin/opam
+      opam init -y
+
 - name: Remove ~/ocluster
   file:
     path: "{{ ansible_env.HOME }}/ocluster"
