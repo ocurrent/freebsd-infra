@@ -27,6 +27,12 @@
       - set checksum=off obuilder
       - set compression=off obuilder
 
+  - name: Remove BSDINSTALL_DISTDIR
+    file:
+      path: "/usr/freebsd-dist"
+      state: absent
+    become: yes
+
 - name: Run the installation playbook
   import_playbook: playbook.yml
 

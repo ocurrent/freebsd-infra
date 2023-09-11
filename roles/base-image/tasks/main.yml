@@ -28,6 +28,15 @@
 - name: Install FreeBSD in jail /{{ zfs_pool }}/base-image/{{ base_image }}/rootfs
   shell: bsdinstall -D jail.log script jail /{{ zfs_pool }}/base-image/{{ base_image }}/rootfs
 
+- name: Fetch and install OS updates for the jail
+  shell: freebsd-update -b /{{ zfs_pool }}/base-image/{{ base_image }}/rootfs fetch install
+
+- name: Upgrade pkg
+  shell: pkg --chroot /{{ zfs_pool }}/base-image/{{ base_image }}/rootfs install -y pkg
+
+- name: Upgrade pkg packages
+  shell: pkg --chroot /{{ zfs_pool }}/base-image/{{ base_image }}/rootfs upgrade -f -y
+
 - name: Create OS setup script /{{ zfs_pool }}/base-image/{{ base_image }}/rootfs/root/freebsd.sh
   copy:
     dest: "/{{ zfs_pool }}/base-image/{{ base_image }}/rootfs/root/freebsd.sh"

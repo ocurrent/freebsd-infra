@@ -1,5 +1,4 @@
 summer.caelum.ci.dev capacity=10 zfs_dev=/dev/ada0
-fall capacity=1
 falling ansible_host=172.20.13.255 capacity=10 zfs_dev=/dev/da1
 
 [all:vars]

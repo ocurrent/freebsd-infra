@@ -16,6 +16,9 @@
   shell: uname -r
   register: uname
 
+- name: Install FreeBSD package and security updates
+  shell: pkg update && pkg upgrade
+
 - name: Reboot
   reboot:
   when: uname.stdout != freebsd_version.stdout
