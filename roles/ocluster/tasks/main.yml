@@ -23,19 +23,17 @@
 
 - name: Download the source from GitHub
   git:
-    repo: https://github.com/mtelvers/ocluster.git
+    repo: https://github.com/ocurrent/ocluster.git
     dest: "{{ ansible_env.HOME }}/ocluster"
     force: yes
     recursive: no
-    version: freebsd
-
+ 
 - name: Download the source from GitHub
   git:
-    repo: https://github.com/mtelvers/obuilder.git
+    repo: https://github.com/ocurrent/obuilder.git
     dest: "{{ ansible_env.HOME }}/ocluster/obuilder"
     force: yes
     recursive: no
-    version: freebsd
 
 - name: Create opam switch
   shell: opam switch create . 4.14.1 --deps-only --with-test -y
