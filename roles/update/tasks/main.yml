@@ -17,7 +17,7 @@
   register: uname
 
 - name: Install FreeBSD package and security updates
-  shell: pkg update && pkg upgrade
+  shell: pkg update && pkg upgrade -y
 
 - name: Reboot
   reboot:
