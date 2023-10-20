@@ -64,14 +64,8 @@
       touch .hushlogin
       sed -i "" 's/^[^#]*fortune/# &/' .profile .login
       echo "OPAMCONFIRMLEVEL=unsafe-yes; export OPAMCONFIRMLEVEL" >> .profile
-      curl https://raw.githubusercontent.com/ocaml/opam/master/shell/install.sh -o install.sh
-      chmod +x install.sh
-      ./install.sh --download-only
-      ./install.sh --download-only --dev
-      rm install.sh
-      chmod +x opam-2.1.* opam-2.2.*
-      sudo mv opam-2.1.* /usr/local/bin/opam-2.1
-      sudo mv opam-2.2.* /usr/local/bin/opam-dev
+      git clone -b 2.1 https://github.com/ocaml/opam opam && cd opam && gmake CONFIGURE_ARGS=--with-0install-solver cold && sudo cp -p opam /usr/local/bin/opam-2.1 && cd ../ && rm -rf opam
+      git clone -b master https://github.com/ocaml/opam opam && cd opam && gmake CONFIGURE_ARGS=--with-0install-solver cold && sudo cp -p opam /usr/local/bin/opam-dev && cd ../ && rm -rf opam
       sudo ln /usr/local/bin/opam-2.1 /usr/local/bin/opam
       git clone https://github.com/ocaml/opam-repository.git
       opam init -k git -a ./opam-repository -c {{ version }} -y

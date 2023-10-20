@@ -13,6 +13,13 @@ Create the ZFS pool for obuilder (typicaly on a second disk)
 zpool create obuilder /dev/da1
 ```
 
+If your root rolume is UFS then you should explicitly import the ZFS
+volumes at boot with:
+
+```shell
+sysrc zfs_enable=YES
+```
+
 Add your SSH key, allow root to login and disable password authentication
 
 ```shell
@@ -38,10 +45,17 @@ exit
 
 Ensure you can SSH to the machine (as root) without a password.
 
+Add your new machine to the `hosts` file.  Optionally specify the IP
+address if `new_machine` does not resolve in DNS.
+
+```
+new_machine ansible_host=1.2.3.4 capacity=10 zfs_dev=/dev/da1
+```
+
 Then create the base images on your FreeBSD machine:
 
 ```shell
-ansible-playbook -i hosts playbook.yml
+ansible-playbook --limit new_machine playbook.yml
 ```
 
 Once installed the worker logs to syslog and can be stopped and started with:
