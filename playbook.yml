@@ -4,7 +4,7 @@
   name: Install Roles
   roles:
     - update
-      #- ocluster
+    - ocluster
     - docker
     - { role: base-image, version: "busybox", user_name: opam, zfs_pool: "obuilder", default: false }
     - { role: base-image, version: "4.14.1", user_name: opam, zfs_pool: "obuilder" , default: false }

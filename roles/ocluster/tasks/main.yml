@@ -36,7 +36,7 @@
     recursive: no
 
 - name: Create opam switch
-  shell: opam switch create . 4.14.1 --deps-only --with-test -y
+  shell: opam switch create . 4.14.1 --deps-only --with-test --confirm-level=unsafe-yes
   args:
     chdir: "{{ ansible_env.HOME }}/ocluster"
 
