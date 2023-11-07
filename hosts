@@ -1,5 +1,5 @@
 summer.caelum.ci.dev capacity=10 zfs_dev=/dev/ada0
-fall ansible_host=172.20.13.4 capacity=10 zfs_dev=/dev/da1
+spring.caelum.ci.dev capacity=10 zfs_dev=/dev/ada0
 
 [all:vars]
 ansible_python_interpreter=/usr/local/bin/python
