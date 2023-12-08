@@ -8,8 +8,8 @@
   register: update
   failed_when: update.rc > 2
 
-- name: Check freebsd-version -k
-  shell: freebsd-version -k
+- name: Check freebsd-version
+  shell: freebsd-version
   register: freebsd_version
 
 - name: Check uname -r
