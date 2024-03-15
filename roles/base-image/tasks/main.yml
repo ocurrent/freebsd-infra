@@ -56,11 +56,11 @@
 
 - name: Create setup script
   copy:
-    dest: "/{{ zfs_pool }}/base-image/{{ base_image }}/rootfs/usr/home/{{ user_name }}/freebsd-ocaml.sh"
+    dest: "/{{ zfs_pool }}/base-image/{{ base_image }}/rootfs/home/{{ user_name }}/freebsd-ocaml.sh"
     mode: u+rwx,g+rx,o+rx
     content: |
       #!/bin/sh
-      cd /usr/home/opam
+      cd /home/opam
       touch .hushlogin
       sed -i "" 's/^[^#]*fortune/# &/' .profile .login
       echo "OPAMCONFIRMLEVEL=unsafe-yes; export OPAMCONFIRMLEVEL" >> .profile
@@ -72,7 +72,7 @@
   when: version != "busybox"
 
 - name: Run freebsd-ocaml.sh script in jail /{{ zfs_pool }}/base-image/{{ base_image }}/rootfs as user {{ user_name }} for {{ version }}
-  shell: jail -c name=base-image path=/{{ zfs_pool }}/base-image/{{ base_image }}/rootfs host=inherit ip6=inherit ip4=inherit mount.devfs exec.jail_user=opam command=/usr/home/opam/freebsd-ocaml.sh
+  shell: jail -c name=base-image path=/{{ zfs_pool }}/base-image/{{ base_image }}/rootfs host=inherit ip6=inherit ip4=inherit mount.devfs exec.jail_user=opam command=/home/opam/freebsd-ocaml.sh
   when: version != "busybox"
 
 - name: Unmount devfs
