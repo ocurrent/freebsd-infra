@@ -9,5 +9,6 @@
     - { role: base-image, version: "busybox", user_name: opam, zfs_pool: "obuilder", default: false }
     - { role: base-image, version: "4.14.2", user_name: opam, zfs_pool: "obuilder" , default: false }
     - { role: base-image, version: "5.0.0", user_name: opam, zfs_pool: "obuilder" , default: false }
-    - { role: base-image, version: "5.1.1", user_name: opam, zfs_pool: "obuilder" , default: true }
+    - { role: base-image, version: "5.1.1", user_name: opam, zfs_pool: "obuilder" , default: false }
+    - { role: base-image, version: "5.2.0", user_name: opam, zfs_pool: "obuilder" , default: true }
 
