@@ -18,11 +18,11 @@ export PATH
 
 # `daemon` will run the worker process
 command="/usr/sbin/daemon"
-# --restart : supervise the process and restart it after 1 second if it crashes
+# --restart-delay : Supervise and restart the program after the specified seconds of delay if it has been terminated.
 # --syslog : direct stdout and stderr to the syslog
 # --title : the name to give the process
 # See https://man.freebsd.org/cgi/man.cgi?daemon(8)
-command_args="--restart --syslog --title ${title} ${worker_command}"
+command_args="--restart-delay 60 --syslog --title ${title} ${worker_command}"
 
 load_rc_config $name
 run_rc_command "$1"
