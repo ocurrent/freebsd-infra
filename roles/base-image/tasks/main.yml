@@ -1,7 +1,7 @@
 ---
 
 - set_fact:
-    base_image: "freebsd-ocaml-{{ version.split('.')[:2] | join('.') }}"
+    base_image: "freebsd-14.1-ocaml-{{ version.split('.')[:2] | join('.') }}"
   when: version != "busybox"
 
 - set_fact:
@@ -68,7 +68,7 @@
       git config --global user.name "Your Name"
       curl -s https://raw.githubusercontent.com/ocaml/opam/master/shell/install.sh -o install.sh
       chmod +x install.sh
-      for version in 2.1.6 2.2.1 dev ; do
+      for version in 2.1.6 2.2.1 2.3.0 dev ; do
         if [ "$version" = "dev" ] ; then
           ./install.sh --dev --download-only
         else
