@@ -54,7 +54,7 @@ mkdir -p $1 || error "mkdir failed for $1"
 test ! -d $BSDINSTALL_DISTDIR && mkdir -p $BSDINSTALL_DISTDIR
 
 if [ ! -f $BSDINSTALL_DISTDIR/MANIFEST -a -z "$BSDINSTALL_DISTSITE" ]; then
-	export BSDINSTALL_DISTSITE="https://download.freebsd.org/ftp/releases/amd64/amd64/14.1-RELEASE"
+	export BSDINSTALL_DISTSITE="https://download.freebsd.org/ftp/releases/amd64/amd64/14.2-RELEASE"
 	fetch -o $BSDINSTALL_DISTDIR/MANIFEST $BSDINSTALL_DISTSITE/MANIFEST || error "Could not download $BSDINSTALL_DISTSITE/MANIFEST"
 fi
 

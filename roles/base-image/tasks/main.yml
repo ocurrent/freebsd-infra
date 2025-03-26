@@ -1,7 +1,7 @@
 ---
 
 - set_fact:
-    base_image: "freebsd-14.1-ocaml-{{ version.split('.')[:2] | join('.') }}"
+    base_image: "freebsd-14.2-ocaml-{{ version.split('.')[:2] | join('.') }}"
   when: version != "busybox"
 
 - set_fact:
