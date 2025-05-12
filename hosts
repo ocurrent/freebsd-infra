@@ -1,5 +1,4 @@
-summer.caelum.ci.dev capacity=10 zfs_dev=/dev/ada0
-spring.caelum.ci.dev capacity=10 zfs_dev=/dev/ada0
+rosemary.caelum.ci.dev capacity=20 zfs_dev=/dev/da0
 
 [all:vars]
-ansible_python_interpreter=/usr/local/bin/python
+ansible_python_interpreter=/usr/local/bin/python3
