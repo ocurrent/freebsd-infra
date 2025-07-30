@@ -1,4 +1,4 @@
-rosemary.caelum.ci.dev capacity=20 zfs_dev=/dev/da0
+rosemary.caelum.ci.dev capacity=20 zfs_dev=/dev/da0p3
 
 [all:vars]
 ansible_python_interpreter=/usr/local/bin/python3
