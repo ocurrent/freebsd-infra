@@ -9,7 +9,7 @@
 name=worker
 title=ocluster_worker # Title of the process
 # The command to invoke the worker process
-worker_command="/usr/local/bin/${name} --connect /etc/ocluster/pool.cap --name {{ inventory_hostname_short }} --state-dir /obuilder/state --obuilder-store zfs:obuilder --obuilder-healthcheck 0 --obuilder-prune-threshold=25 --capacity={{ capacity }} -v"
+worker_command="/usr/local/bin/${name} --connect /etc/ocluster/pool.cap --name {{ inventory_hostname_short }} --state-dir /obuilder/state --obuilder-store zfs:obuilder --obuilder-healthcheck 0 --obuilder-prune-threshold=90 --capacity={{ capacity }} -v"
 
 rcvar=worker_enable
 
