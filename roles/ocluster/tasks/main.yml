@@ -13,8 +13,7 @@
       rm install.sh
       chmod +x opam-*
       mv opam-* /usr/local/bin/opam
-      sudo ln /usr/local/bin/opam-2.1 /usr/local/bin/opam
-      opam init -y
+      opam init --bare -y
 
 - name: Remove ~/ocluster
   file:
@@ -26,17 +25,10 @@
     repo: https://github.com/ocurrent/ocluster.git
     dest: "{{ ansible_env.HOME }}/ocluster"
     force: yes
-    recursive: no
- 
-- name: Download the source from GitHub
-  git:
-    repo: https://github.com/ocurrent/obuilder.git
-    dest: "{{ ansible_env.HOME }}/ocluster/obuilder"
-    force: yes
-    recursive: no
+    recursive: yes
 
 - name: Create opam switch
-  shell: opam switch create . 4.14.1 --deps-only --with-test --confirm-level=unsafe-yes
+  shell: env OPAMSOLVERTIMEOUT=600 opam switch create . 4.14.2 --deps-only --with-test --confirm-level=unsafe-yes
   args:
     chdir: "{{ ansible_env.HOME }}/ocluster"
 

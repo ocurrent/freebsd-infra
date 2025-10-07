@@ -4,7 +4,7 @@
   tasks:
 
   - name: Pause the worker
-    shell: ci3-admin pause --wait freebsd-x86_64 {{ inventory_hostname_short }}
+    shell: ocluster-admin -c ~/admin.cap pause --auto-create --wait freebsd-x86_64 {{ inventory_hostname_short }}
     delegate_to: 127.0.0.1
 
   - name: Stop ocluster worker
@@ -45,6 +45,6 @@
       state: started
 
   - name: Unpause the worker
-    shell: ci3-admin unpause freebsd-x86_64 {{ inventory_hostname_short }}
+    shell: ocluster-admin -c ~/admin.cap unpause freebsd-x86_64 {{ inventory_hostname_short }}
     delegate_to: 127.0.0.1
 
