@@ -1,7 +1,7 @@
 ---
 
 - set_fact:
-    base_image: "freebsd-14.3-ocaml-{{ version.split('.')[:2] | join('.') }}"
+    base_image: "freebsd-15.0-ocaml-{{ version.split('.')[:2] | join('.') }}"
   when: version != "busybox"
 
 - set_fact:
@@ -20,13 +20,12 @@
 - name: Create target for base image {{ zfs_pool }}/base-image/{{ base_image }}/rootfs
   shell: zfs create -p {{ zfs_pool }}/base-image/{{ base_image }}/rootfs
 
-- name: Copy the bsdinstall answer script
-  copy:
-    src: jail
-    dest: jail
-
 - name: Install FreeBSD in jail /{{ zfs_pool }}/base-image/{{ base_image }}/rootfs
-  shell: bsdinstall -D jail.log script jail /{{ zfs_pool }}/base-image/{{ base_image }}/rootfs
+  shell: bsdinstall jail /{{ zfs_pool }}/base-image/{{ base_image }}/rootfs
+  environment:
+    nonInteractive: "YES"
+    BSDINSTALL_DISTSITE: "https://download.freebsd.org/ftp/releases/amd64/amd64/15.0-RELEASE"
+    DISTRIBUTIONS: "base.txz"
 
 - name: Fetch and install OS updates for the jail
   shell: freebsd-update -b /{{ zfs_pool }}/base-image/{{ base_image }}/rootfs fetch install
