@@ -2,6 +2,12 @@
 
 - hosts: all
   name: Install Roles
+  pre_tasks:
+    - name: Remove stale BSDINSTALL_DISTDIR
+      file:
+        path: /usr/freebsd-dist
+        state: absent
+      become: yes
   roles:
     - update
     - ocluster
