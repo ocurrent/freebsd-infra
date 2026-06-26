@@ -73,6 +73,10 @@ Use `update.yml` to pause the worker, update it, rebuild the base images, and re
 ansible-playbook -i hosts update.yml
 ```
 
+To refresh the OCaml base images (add a compiler, bump a point release, or
+migrate to a new FreeBSD release) without a full pool rebuild, see
+[HOWTO-update-base-images.md](HOWTO-update-base-images.md).
+
 
 ## Manual partitioning
 
