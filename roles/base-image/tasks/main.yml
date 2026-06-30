@@ -1,7 +1,7 @@
 ---
 
 - set_fact:
-    base_image: "freebsd-15.0-ocaml-{{ version.split('.')[:2] | join('.') }}"
+    base_image: "freebsd-15.1-ocaml-{{ version.split('.')[:2] | join('.') }}"
   when: version != "busybox"
 
 - set_fact:
@@ -24,11 +24,11 @@
   shell: bsdinstall jail /{{ zfs_pool }}/base-image/{{ base_image }}/rootfs
   environment:
     nonInteractive: "YES"
-    BSDINSTALL_DISTSITE: "https://download.freebsd.org/ftp/releases/amd64/amd64/15.0-RELEASE"
+    BSDINSTALL_DISTSITE: "https://download.freebsd.org/ftp/releases/amd64/amd64/15.1-RELEASE"
     DISTRIBUTIONS: "base.txz"
 
 - name: Fetch and install OS updates for the jail
-  shell: freebsd-update -b /{{ zfs_pool }}/base-image/{{ base_image }}/rootfs fetch install
+  shell: freebsd-update -b /{{ zfs_pool }}/base-image/{{ base_image }}/rootfs --currently-running 15.1-RELEASE fetch install
 
 - name: Upgrade pkg
   shell: pkg --chroot /{{ zfs_pool }}/base-image/{{ base_image }}/rootfs install -y pkg
