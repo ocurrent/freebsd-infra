@@ -66,6 +66,21 @@
     dest: /usr/local/etc/rc.d/worker
     mode: '0755'
 
-- name: Create rc.d script
+- name: Enable the worker service
   shell: sysrc worker_enable="YES"
+
+- name: Disable the weekly locate database rebuild
+  # Pointless on a build worker, and it scans the entire obuilder ZFS store (tens of
+  # thousands of result datasets), running for days and starving the pool of I/O.
+  shell: sysrc -f /etc/periodic.conf weekly_locate_enable="NO"
+
+- name: Keep the clock disciplined with ntpd
+  # With no time daemon the wall clock stepped backwards, after which the worker
+  # stopped starting new builds while the scheduler still counted its slots as in
+  # use. Run ntpd, sync once at boot, then slew (-x) so corrections never step the
+  # clock during a build.
+  shell: |
+    sysrc ntpd_enable="YES"
+    sysrc ntpd_sync_on_start="YES"
+    sysrc ntpd_flags="-x"
 
