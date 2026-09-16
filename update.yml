@@ -39,6 +39,16 @@
 - hosts: all
   tasks:
 
+  - name: Deploy the worker rc.d script
+    # playbook.yml has the ocluster role commented out, so a redeploy would
+    # otherwise restart the worker from the on-host rc.d script without picking
+    # up template changes (e.g. the prune threshold or capacity). Re-render it
+    # here so the host config always matches the repo after a redeploy.
+    template:
+      src: roles/ocluster/templates/worker
+      dest: /usr/local/etc/rc.d/worker
+      mode: '0755'
+
   - name: Start ocluster worker
     service:
       name: worker
