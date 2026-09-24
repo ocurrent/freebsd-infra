@@ -74,6 +74,15 @@
   # thousands of result datasets), running for days and starving the pool of I/O.
   shell: sysrc -f /etc/periodic.conf weekly_locate_enable="NO"
 
+- name: Disable the daily security filesystem scan
+  # The daily periodic security run does `find -sx` over every local mount. On a
+  # busy worker that walks the thousands of mounted obuilder result filesystems
+  # (millions of files), inflating the kernel vnode cache to millions of entries
+  # and needlessly loading the vnode subsystem. Meaningless on a build worker (it
+  # checks ephemeral build artefacts for setuid bits), so disable it like the
+  # weekly locate scan above.
+  shell: sysrc -f /etc/periodic.conf daily_status_security_enable="NO"
+
 - name: Keep the clock disciplined with ntpd
   # With no time daemon the wall clock stepped backwards, after which the worker
   # stopped starting new builds while the scheduler still counted its slots as in
